@@ -1,0 +1,69 @@
+
+/*Ingreso nuevo de Subscriptor*/
+insert into bd_sample.tbl_subscriptores (
+codigo_subscriptor, nombres, apellidos)
+values ("202212345", "Jon Paul", "Doe");
+
+/* Ejecucion 1*/
+set @v_id_subscriptor =  18 ;
+set @v_id_factura 	  =  30;
+set @v_id_producto 	  =  2 ;
+set @v_cantidad		  =  2 ;
+set @v_numero_items   =  0 ;
+set @v_precio_prod    =  0 ;
+
+/* Ejecucion 2*/
+set @v_id_subscriptor =  18 ;
+set @v_id_factura 	  =  30;
+set @v_id_producto 	  =  3 ;
+set @v_cantidad		  =  2 ;
+set @v_numero_items   =  0 ;
+set @v_precio_prod    =  0 ;
+
+/* 1. Crear la factura 
+    insert into bd_sample.tbl_facturas (
+		id_factura, fecha_emision, id_subscriptor, numero_items, isv_total, subtotal, totapagar
+    ) values (
+		null, curdate(),@v_id_subscriptor , 0, 0, 0, 0 );
+
+    select id_factura into @v_id_factura
+    from bd_sample.tbl_facturas 
+    where id_subscriptor = @v_id_subscriptor
+    order by  id_factura desc ;
+    
+/* 2. Agregar articulos*/
+    insert into  bd_sample . tbl_items_factura (
+		id_factura, id_producto, cantidad
+    ) values ( @v_id_factura, @v_id_producto, @v_cantidad );
+    
+    /* 3. Actualizar resumen de Factura */
+        select sum(cantidad) into @v_numero_items
+    from bd_sample . tbl_items_factura
+    where id_factura = @v_id_factura;
+    
+        select precio_venta into @v_precio_prod  
+    from bd_sample . tbl_productos 
+    where id_producto = @v_id_producto;
+    
+    	update bd_sample . tbl_facturas 
+		set numero_items = @v_numero_items,
+			isv_total = (@v_precio_prod * @v_numero_items) *0.18 ,
+            subtotal   =   @v_precio_prod * @v_numero_items,
+            totapagar = (@v_precio_prod * @v_numero_items) *1.18
+		 where id_factura =   @v_id_factura;
+         
+         commit;
+         
+         
+         select * from
+         bd_sample.tbl_facturas
+         where id_subscriptor=18
+    and date_format(fecha_emision, "%Y%m")="202202"
+    ;
+    
+    select * from bd_sample.tbl_items_factura where id_factura=30;
+    
+    /*Responder a la pregunta
+    ¿Cuál es el monto total de las facturas creadas para el subscriptor con código: 202212345?
+    R: El monto total entre las dos ejecuciones es de 44.84.*/
+    
