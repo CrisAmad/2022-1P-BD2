@@ -63,7 +63,5 @@ set @v_precio_prod    =  0 ;
     
     select * from bd_sample.tbl_items_factura where id_factura=30;
     
-    /*Responder a la pregunta
-    ¿Cuál es el monto total de las facturas creadas para el subscriptor con código: 202212345?
-    R: El monto total entre las dos ejecuciones es de 44.84.*/
+    
     
